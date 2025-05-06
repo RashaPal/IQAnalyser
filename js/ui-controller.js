@@ -13,6 +13,10 @@ class UIController {
     this.currentPage = 1;
     this.rowsPerPage = 20; // Default
     
+// Add to the UIController class constructor
+//this.sortDirection = 'asc';
+//this.sortColumn = 'id'; // default sort column
+
     // Debug mode
     this.debugMode = true;
     
@@ -217,6 +221,13 @@ class UIController {
     
     // Update table with pagination
     this.updatePaginatedTable();
+
+    // In the displayResults method, add after updating filters
+this.updateTableHeaders();
+
+// Make sure to sort epics when displaying initially
+this.sortEpics();
+
   }
   
   /**
@@ -973,6 +984,174 @@ updateResultsTable(epics) {
       nextBtn.disabled = this.currentPage >= totalPages || this.rowsPerPage === 'all';
     }
   }
+
+  /**
+ * Update the results table header to support sorting
+ * Add this method to UIController class
+ */
+updateTableHeaders() {
+  const headers = document.querySelectorAll('#resultsTable th');
+  
+  // Map of columns to their data attributes for sorting
+  const sortableColumns = {
+    'Epic ID': 'id',
+    'Epic Name': 'name',
+    'Current Status': 'status',
+    'Time in Status': 'timeInStatus',
+    'Sprint': 'sprint',
+    'Story Points': 'totalStoryPoints',
+    'Cycle Time (days)': 'cycleTime',
+    'SLA Status': 'slaStatus',
+    'Completion': 'completion'
+  };
+  
+  headers.forEach(header => {
+    const columnName = header.textContent;
+    const dataAttribute = sortableColumns[columnName];
+    
+    // Skip non-sortable columns
+    if (!dataAttribute) return;
+    
+    // Add sortable class and data attribute
+    header.classList.add('sortable');
+    header.setAttribute('data-sort', dataAttribute);
+    
+    // Add sort indicator
+    const sortIndicator = document.createElement('span');
+    sortIndicator.className = 'sort-indicator';
+    sortIndicator.innerHTML = '<i class="fas fa-sort"></i>';
+    header.appendChild(sortIndicator);
+    
+    // Add click event
+    header.addEventListener('click', () => this.handleSort(dataAttribute));
+  });
+}
+
+/**
+ * Handle sorting when a header is clicked
+ * @param {string} column - Column to sort by
+ */
+handleSort(column) {
+  // Toggle sort direction if same column clicked again
+  if (this.sortColumn === column) {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    this.sortColumn = column;
+    this.sortDirection = 'asc';
+  }
+  
+  // Update sort indicators in the UI
+  this.updateSortIndicators();
+  
+  // Sort the filtered epics
+  this.sortEpics();
+  
+  // Update the table
+  this.updatePaginatedTable();
+}
+
+/**
+ * Update sort indicators in table headers
+ */
+updateSortIndicators() {
+  const headers = document.querySelectorAll('#resultsTable th.sortable');
+  
+  headers.forEach(header => {
+    const column = header.getAttribute('data-sort');
+    const indicator = header.querySelector('.sort-indicator');
+    
+    if (column === this.sortColumn) {
+      indicator.innerHTML = this.sortDirection === 'asc' 
+        ? '<i class="fas fa-sort-up"></i>' 
+        : '<i class="fas fa-sort-down"></i>';
+    } else {
+      indicator.innerHTML = '<i class="fas fa-sort"></i>';
+    }
+  });
+}
+
+/**
+ * Sort epics based on current sort column and direction
+ */
+sortEpics() {
+  const column = this.sortColumn;
+  const direction = this.sortDirection;
+  
+  this.filteredEpics.sort((a, b) => {
+    let valueA, valueB;
+    
+    // Extract the appropriate values for comparison
+    switch (column) {
+      case 'id':
+        valueA = a.id;
+        valueB = b.id;
+        break;
+      case 'name':
+        valueA = a.name || '';
+        valueB = b.name || '';
+        break;
+      case 'status':
+        valueA = a.status || '';
+        valueB = b.status || '';
+        break;
+      case 'timeInStatus':
+        // Convert time to numeric value for sorting
+        valueA = this.parseTimeValue(a.timeInStatus);
+        valueB = this.parseTimeValue(b.timeInStatus);
+        break;
+      case 'sprint':
+        valueA = a.sprint || '';
+        valueB = b.sprint || '';
+        break;
+      case 'totalStoryPoints':
+        valueA = a.totalStoryPoints || 0;
+        valueB = b.totalStoryPoints || 0;
+        break;
+      case 'cycleTime':
+        valueA = parseFloat(a.cycleTime) || 0;
+        valueB = parseFloat(b.cycleTime) || 0;
+        break;
+      case 'slaStatus':
+        valueA = a.slaStatus ? a.slaStatus.text : '';
+        valueB = b.slaStatus ? b.slaStatus.text : '';
+        break;
+      case 'completion':
+        valueA = a.completedStoryPoints / (a.totalStoryPoints || 1);
+        valueB = b.completedStoryPoints / (b.totalStoryPoints || 1);
+        break;
+      default:
+        valueA = a.id;
+        valueB = b.id;
+    }
+    
+    // Compare the values
+    let result;
+    if (typeof valueA === 'number' && typeof valueB === 'number') {
+      result = valueA - valueB;
+    } else {
+      result = String(valueA).localeCompare(String(valueB));
+    }
+    
+    // Apply sort direction
+    return direction === 'asc' ? result : -result;
+  });
+}
+
+/**
+ * Parse time value for sorting (e.g., "2w 3d" -> days)
+ * @param {string} timeString - Time string to parse
+ * @returns {number} - Time value in days
+ */
+parseTimeValue(timeString) {
+  if (!timeString || timeString === '-') return 0;
+  
+  try {
+    return DataProcessor.parseTimeInStatus(timeString);
+  } catch (e) {
+    return 0;
+  }
+}
+
 }
 
 // Make UIController available globally
