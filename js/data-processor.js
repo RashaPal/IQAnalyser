@@ -357,11 +357,13 @@ epics.sort((a, b) => {
   const numB = parseInt(b.id.replace(/[^\d]/g, '')) || 0;
   return numB - numA; // Descending order
 });
-      
-      return { 
-        epics, 
-        childIssues: epics.reduce((all, epic) => [...all, ...epic.children], [])
-      };
+
+return { 
+  epics, 
+  childIssues: epics.reduce((all, epic) => [...all, ...epic.children], [])
+};
+
+
     } catch (error) {
       console.error('Error processing main CSV:', error);
       throw new Error(`Failed to process main CSV data: ${error.message}`);
