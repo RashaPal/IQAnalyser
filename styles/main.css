@@ -1,1483 +1,959 @@
-/* Main Styles for Jira Epic Analyzer */
-:root {
-  /* Color palette */
-  --primary-color: #0052cc;
-  --primary-hover: #0747a6;
-  --secondary-color: #6b778c;
-  --secondary-hover: #505f79;
-  --background-color: #f5f7fa;
-  --panel-bg: #ffffff;
-  --text-color: #172b4d;
-  --light-text: #6b778c;
-  --border-color: #dfe1e6;
-  --success-bg: #e3fcef;
-  --success-color: #006644;
-  --warning-bg: #ffebe6;
-  --warning-color: #bf2600;
-  --info-bg: #deebff;
-  --info-color: #0747a6;
-  --header-bg: #0747a6;
-  --header-text: #ffffff;
-  
-  /* Spacing */
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 32px;
-  
-  /* Elements */
-  --border-radius: 6px;
-  --box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-/* Base Styles */
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
-  line-height: 1.5;
-  font-size: 16px;
-}
-
-h1, h2, h3, h4, h5, h6 {
-  margin-bottom: var(--spacing-md);
-  font-weight: 600;
-}
-
-a {
-  color: var(--primary-color);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-button {
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 1rem;
-}
-
-/* Layout */
-.app-container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: var(--spacing-lg);
-}
-
-header {
-  background-color: var(--header-bg);
-  color: var(--header-text);
-  padding: var(--spacing-lg);
-  border-radius: var(--border-radius) var(--border-radius) 0 0;
-  text-align: center;
-  margin-bottom: var(--spacing-lg);
-}
-
-header h1 {
-  margin-bottom: var(--spacing-xs);
-}
-
-.subtitle {
-  font-size: 1rem;
-  opacity: 0.8;
-}
-
-main {
-  display: grid;
-  grid-gap: var(--spacing-lg);
-}
-
-footer {
-  margin-top: var(--spacing-xl);
-  text-align: center;
-  padding: var(--spacing-lg);
-  color: var(--light-text);
-  font-size: 0.9rem;
-}
-
-/* Panels */
-.input-panel, .results-panel, .info-panel, .sla-config-panel {
-  background-color: var(--panel-bg);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  box-shadow: var(--box-shadow);
-  margin-bottom: var(--spacing-lg);
-}
-
-.panel-header {
-  background-color: #f4f5f7;
-  padding: var(--spacing-md);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.panel-header h2 {
-  font-size: 1.2rem;
-  margin-bottom: 0;
-}
-
-.panel-body {
-  padding: var(--spacing-lg);
-}
-
-/* Form elements */
-.file-input-group {
-  margin-bottom: var(--spacing-lg);
-}
-
-.file-input-group label {
-  display: block;
-  margin-bottom: var(--spacing-sm);
-  font-weight: 500;
-}
-
-.file-input-container {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-input[type="file"] {
-  flex: 1;
-  padding: var(--spacing-md);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  background-color: #f4f5f7;
-  transition: all 0.3s ease;
-}
-
-input[type="file"].highlight-required {
-  border: 2px solid var(--warning-color);
-  background-color: var(--warning-bg);
-  box-shadow: 0 0 8px rgba(191, 38, 0, 0.3);
-  animation: pulse 1.5s ease-in-out;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.03); }
-  100% { transform: scale(1); }
-}
-
-.file-name {
-  color: var(--light-text);
-  font-size: 0.9rem;
-  font-style: italic;
-}
-
-.action-buttons {
-  display: flex;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
-}
-
-.primary-btn {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-radius: var(--border-radius);
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  transition: background-color 0.2s;
-}
-
-.primary-btn:hover {
-  background-color: var(--primary-hover);
-}
-
-.secondary-btn {
-  background-color: var(--secondary-color);
-  color: white;
-  border: none;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-radius: var(--border-radius);
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  transition: background-color 0.2s;
-}
-
-.secondary-btn:hover {
-  background-color: var(--secondary-hover);
-}
-
-/* Results section */
-.results-panel {
-  display: none;
-}
-
-.metrics-summary {
-  background-color: #f9fafb;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
-}
-
-.metrics-card {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-}
-
-.metric-item {
-  padding: var(--spacing-md);
-  background-color: var(--panel-bg);
-  border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
-  text-align: center;
-}
-
-.metric-value {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: var(--primary-color);
-  display: block;
-}
-
-.metric-label {
-  color: var(--light-text);
-  font-size: 0.9rem;
-}
-
-/* Filter Controls */
-.filter-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
-}
-
-.filter-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.filter-item select {
-  padding: var(--spacing-sm) var(--spacing-md);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  background-color: #f4f5f7;
-}
-
-/* Status Legend */
-.status-legend {
-  display: flex;
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-md);
-  flex-wrap: wrap;
-}
-
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-radius: var(--border-radius);
-}
-
-.legend-swatch {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
-}
-
-.on-track .legend-swatch {
-  background-color: var(--success-bg);
-}
-
-.at-risk .legend-swatch {
-  background-color: var(--warning-bg);
-}
-
-.closed .legend-swatch {
-  background-color: var(--info-bg);
-}
-
-/* Table Controls */
-.table-controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-md);
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
-}
-
-.rows-per-page {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.rows-per-page select {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  background-color: #f4f5f7;
-}
-
-.pagination-controls {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-md);
-}
-
-.pagination-btn {
-  background: none;
-  border: 1px solid var(--border-color);
-  width: 32px;
-  height: 32px;
-  border-radius: var(--border-radius);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.pagination-btn:hover:not([disabled]) {
-  background-color: var(--primary-color);
-  color: white;
-  border-color: var(--primary-color);
-}
-
-.pagination-btn[disabled] {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.pagination-info {
-  font-size: 0.9rem;
-  color: var(--light-text);
-}
-
-/* Table Styles */
-.table-container {
-  overflow-x: auto;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: var(--spacing-md);
-  font-size: 0.95rem;
-}
-
-th, td {
-  padding: var(--spacing-md);
-  border: 1px solid var(--border-color);
-  text-align: left;
-}
-
-th {
-  background-color: #f4f5f7;
-  font-weight: 600;
-  position: sticky;
-  top: 0;
-}
-
-tr:nth-child(even) {
-  background-color: #fafbfc;
-}
-
-td.on-track {
-  background-color: var(--success-bg);
-  color: var(--success-color);
-  font-weight: 600;
-}
-
-td.at-risk {
-  background-color: var(--warning-bg);
-  color: var(--warning-color);
-  font-weight: 600;
-}
-
-td.closed {
-  background-color: var(--info-bg);
-  color: var(--info-color);
-  font-weight: 600;
-}
-
-/* Sprint metrics table */
-.sprint-metrics-table {
-  margin-top: var(--spacing-md);
-  font-size: 0.9rem;
-}
-
-
-.sla-item {
-  background-color: #f4f5f7;
-  padding: var(--spacing-md);
-  border-radius: var(--border-radius);
-  display: flex;
-  justify-content: space-between;
-}
-
-.sla-label {
-  font-weight: 600;
-}
-
-/* Loading and error states */
-.loading-indicator {
-  display: none;
-  align-items: center;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-md);
-}
-
-.spinner {
-  width: 24px;
-  height: 24px;
-  border: 3px solid rgba(0, 82, 204, 0.3);
-  border-radius: 50%;
-  border-top-color: var(--primary-color);
-  animation: spin 1s ease-in-out infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.error-message {
-  display: none;
-  padding: var(--spacing-md);
-  background-color: var(--warning-bg);
-  color: var(--warning-color);
-  border-radius: var(--border-radius);
-  margin-top: var(--spacing-md);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .app-container {
-    padding: var(--spacing-md);
+/**
+ * Main application controller for Jira Epic Analyzer
+ * With improved error handling and data validation
+ * Enhanced with hierarchical data processing support
+ * Added embedded demo data functionality
+ */
+
+class JiraEpicAnalyzer {
+  constructor() {
+    this.uiController = new UIController();
+    this.errorHandler = ErrorHandler; // Store reference to ErrorHandler
+    this.epicsData = null; // Store epics data for reanalysis
+    this.timeData = null; // Store time data for reanalysis
+    this.mainData = null; // Store main data for reanalysis
+    this.childIssuesData = null; // Store child issues data
+    this.initialize();
   }
   
-  .metrics-card {
-    grid-template-columns: 1fr;
+  /**
+   * Initialize the application
+   */
+  initialize() {
+    // Set up analyze button click handler
+    document.getElementById('analyzeBtn').addEventListener('click', async () => {
+      await this.analyzeData();
+    });
+    
+    // Set up demo data button click handler
+    document.getElementById('demoDataBtn').addEventListener('click', () => {
+      this.loadDemoData();
+    });
+    
+    // Set up reset button handler (delegating to UI controller)
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      this.uiController.resetForm();
+    });
+    
+    // Initialize tooltips and other UI elements
+    this.initializeUIHelpers();
   }
   
-  .action-buttons, .filter-controls {
-    flex-direction: column;
+  /**
+   * Set up UI helper elements
+   */
+  initializeUIHelpers() {
+    // Add SLA info tooltips
+    const slaItems = document.querySelectorAll('.sla-item');
+    slaItems.forEach(item => {
+      const label = item.querySelector('.sla-label').textContent;
+      const value = item.querySelector('.sla-value').textContent;
+      item.setAttribute('title', `${label} ${value}`);
+    });
   }
   
-  .filter-item {
-    flex-direction: column;
-    align-items: flex-start;
+  /**
+   * Process and analyze the uploaded CSV data
+   */
+  async analyzeData() {
+    // Clear previous errors and show loading
+    ErrorHandler.clear();
+    
+    // Get file inputs
+    const mainFile = document.getElementById('mainCsvFile').files[0];
+    const timeFile = document.getElementById('timeCsvFile').files[0];
+    
+    // Validate main file before showing loading indicator
+    if (!mainFile) {
+      ErrorHandler.handle(
+        'Please upload a main Jira CSV file with epics data before analyzing.',
+        'File Required', true, 'info'
+      );
+      
+      // Highlight the file input to draw attention
+      const fileInput = document.getElementById('mainCsvFile');
+      fileInput.classList.add('highlight-required');
+      setTimeout(() => {
+        fileInput.classList.remove('highlight-required');
+      }, 3000);
+      
+      return; // Exit the function early
+    }
+    
+    // Show loading only after validation passes
+    Utils.showLoading();
+    
+    try {
+      // Show info message about processing
+      const totalSize = (mainFile.size + (timeFile ? timeFile.size : 0)) / (1024 * 1024);
+      if (totalSize > 5) {
+        ErrorHandler.handle(
+          `Processing ${totalSize.toFixed(1)}MB of data. This might take a moment...`, 
+          '', true, 'info'
+        );
+      }
+      
+      // Parse CSV files with improved error handling
+      let mainData, timeData;
+      
+      try {
+        mainData = await CSVParser.parseFile(mainFile);
+        ErrorHandler.clear(); // Clear info message if successful
+
+         // Log parsed data info for debugging
+         console.log(`Parsed main CSV: ${mainData.headers.length} columns, ${mainData.records.length} rows`);
+        
+      } catch (error) {
+        throw new Error(ErrorHandler.formatCSVError(error, mainFile.name));
+      }
+      
+      if (timeFile) {
+        try {
+          timeData = await CSVParser.parseFile(timeFile);
+        } catch (error) {
+          ErrorHandler.handle(
+            ErrorHandler.formatCSVError(error, timeFile.name),
+            'Time CSV Parse Error', true, 'warning'
+          );
+          // Continue without time data instead of failing completely
+          timeData = null;
+        }
+      } else {
+        timeData = null;
+      }
+      
+      // Validate parsed data
+      this.validateData(mainData);
+      
+      // Store data for potential reanalysis
+      this.mainData = mainData;
+      this.timeData = timeData;
+      
+      // Process CSV data with hierarchical support
+      const processedData = DataProcessor.processMainCSV(mainData);
+      // Check if the returned data has the expected format
+      if (!processedData || !processedData.epics) {
+        throw new Error('Failed to process epic data. Invalid data structure returned.');
+      }
+      
+      const { epics, childIssues } = processedData;
+      
+      // Store child issues data
+      this.childIssuesData = childIssues;
+      
+      // Display warning if no epics found
+      if (!epics || epics.length === 0) {
+        ErrorHandler.handle(
+          'No epics found in the uploaded CSV file. Please check that your CSV contains records with "Epic" issue type.',
+          '', true, 'warning'
+        );
+        Utils.hideLoading();
+        return;
+      }
+      
+      // Process time data if available
+      let timeMap = new Map();
+      try {
+        if (timeData) {
+          timeMap = DataProcessor.processTimeCSV(timeData);
+        }
+      } catch (error) {
+        ErrorHandler.handle(
+          `Error processing time data: ${error.message}. Continuing without time information.`,
+          'Time Data Warning', true, 'warning'
+        );
+      }
+      
+      // Merge and analyze data
+      let mergedEpics, metrics;
+      try {
+        mergedEpics = DataProcessor.mergeEpicData(epics, timeMap);
+        
+        if (!mergedEpics || mergedEpics.length === 0) {
+          throw new Error('Failed to merge epic data. No epics were returned.');
+        }
+        
+        metrics = DataProcessor.calculateMetrics(mergedEpics);
+        
+        if (!metrics || !metrics.overall) {
+          throw new Error('Failed to calculate metrics. Invalid metrics structure returned.');
+        }
+      } catch (error) {
+        throw new Error(`Error analyzing data: ${error.message}`);
+      }
+      
+      // Store epics data for reanalysis
+      this.epicsData = mergedEpics;
+      
+      // Display results
+      this.uiController.displayResults(mergedEpics, metrics);
+      
+      // Show success message with counts
+      const childIssuesCount = childIssues ? childIssues.length : 0;
+      ErrorHandler.handle(
+        `Successfully analyzed ${epics.length} epics and ${childIssuesCount} child issues${timeData ? ' with time tracking data' : ''}.`,
+        '', true, 'info'
+      );
+      
+    } catch (error) {
+      ErrorHandler.handle(error, 'Analysis Error');
+      console.error('Analysis error:', error);
+    } finally {
+      Utils.hideLoading();
+    }
   }
   
-  .filter-item select {
-    width: 100%;
+  /**
+   * Load and process demo data directly from embedded data
+  
+  loadDemoData() {
+    // Clear previous errors and show loading
+    ErrorHandler.clear();
+    Utils.showLoading();
+    
+    try {
+      // Show info message about processing
+      ErrorHandler.handle(
+        "Loading demo data...", 
+        '', true, 'info'
+      );
+      
+      // Create demo data directly
+      const mainData = this.createDemoMainData();
+      const timeData = this.createDemoTimeData();
+      
+      // Validate and store the parsed data
+      this.validateData(mainData);
+      
+      // Store data for potential reanalysis
+      this.mainData = mainData;
+      this.timeData = timeData;
+      
+      // Update UI to show the file names
+      document.getElementById('mainFileName').textContent = 'Demo Epic Data (embedded)';
+      document.getElementById('timeFileName').textContent = 'Demo Time Data (embedded)';
+      
+      // Process and display data
+      const processedData = DataProcessor.processMainCSV(mainData);
+      if (!processedData || !processedData.epics) {
+        throw new Error('Failed to process demo epic data. Invalid data structure returned.');
+      }
+      
+      const { epics, childIssues } = processedData;
+      this.childIssuesData = childIssues;
+      
+      // Display warning if no epics found
+      if (!epics || epics.length === 0) {
+        ErrorHandler.handle(
+          'No epics found in the demo data.',
+          '', true, 'warning'
+        );
+        Utils.hideLoading();
+        return;
+      }
+      
+      // Process time data if available
+      let timeMap = new Map();
+      try {
+        if (timeData) {
+          timeMap = DataProcessor.processTimeCSV(timeData);
+        }
+      } catch (error) {
+        ErrorHandler.handle(
+          `Error processing demo time data: ${error.message}. Continuing without time information.`,
+          'Time Data Warning', true, 'warning'
+        );
+      }
+      
+      // Merge and analyze data
+      const mergedEpics = DataProcessor.mergeEpicData(epics, timeMap);
+      const metrics = DataProcessor.calculateMetrics(mergedEpics);
+      
+      // Store epics data for reanalysis
+      this.epicsData = mergedEpics;
+      
+      // Display results
+      this.uiController.displayResults(mergedEpics, metrics);
+      
+      // Show success message with counts
+      const childIssuesCount = childIssues ? childIssues.length : 0;
+      ErrorHandler.handle(
+        `Successfully loaded demo data with ${epics.length} epics and ${childIssuesCount} child issues.`,
+        '', true, 'info'
+      );
+      
+    } catch (error) {
+      ErrorHandler.handle(error, 'Demo Data Error');
+      console.error('Demo data error:', error);
+    } finally {
+      Utils.hideLoading();
+    }
   }
-}
-
-/* SLA Configuration styles */
-.sla-config-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
-}
-
-.sla-config-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-sm);
-  background-color: #f9fafb;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--border-color);
-}
-
-.sla-config-item label {
-  font-weight: 500;
-  color: var(--text-color);
-}
-
-.sla-input-group {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.sla-input-group input[type="number"],
-.sla-input-group input[type="text"] {
-  width: 80px;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  font-size: 0.95rem;
-  text-align: center;
-}
-
-.sla-input-group input[disabled] {
-  background-color: #f0f0f0;
-  color: var(--light-text);
-  cursor: not-allowed;
-}
-
-.sla-config-actions {
-  display: flex;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
-}
-
-.sla-config-item.no-sla {
-  background-color: #f4f5f7;
-}
-
-/* Info note */
-.info-note {
-  background-color: var(--info-bg);
-  color: var(--info-color);
-  padding: var(--spacing-md);
-  border-radius: var(--border-radius);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  font-size: 0.9rem;
-  margin-top: var(--spacing-md);
-}
-
-.info-note i {
-  font-size: 1.1rem;
-}
-
-/* Additional styles for enhanced error handling */
-
-/* Error message variations */
-.error-message {
-display: none;
-padding: var(--spacing-md);
-border-radius: var(--border-radius);
-margin-top: var(--spacing-md);
-font-size: 0.95rem;
-line-height: 1.4;
-}
-
-.error-message i {
-margin-right: var(--spacing-sm);
-}
-
-.error-message {
-background-color: var(--warning-bg);
-color: var(--warning-color);
-border-left: 4px solid var(--warning-color);
-}
-
-.warning-message {
-background-color: #fffae6;
-color: #ff991f;
-border-left: 4px solid #ff991f;
-}
-
-.info-message {
-background-color: var(--info-bg);
-color: var(--info-color);
-border-left: 4px solid var(--info-color);
-}
-
-/* Loading indicator enhancements */
-.loading-indicator {
-display: none;
-align-items: center;
-gap: var(--spacing-md);
-margin-top: var(--spacing-md);
-padding: var(--spacing-md);
-background-color: rgba(255, 255, 255, 0.8);
-border-radius: var(--border-radius);
-}
-
-/* Progress indicator for large files */
-.progress-indicator {
-  width: 100%;
-  height: 6px;
-  background-color: var(--border-color);
-  border-radius: 3px;
-  margin-top: var(--spacing-sm);
-  overflow: hidden;
-}
-
-.progress-bar {
-  height: 100%;
-  background-color: var(--primary-color);
-  width: 0%;
-  transition: width 0.3s ease;
-}
-
-/* CSV File preview */
-.file-preview {
-  margin-top: var(--spacing-md);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  max-height: 200px;
-  overflow: auto;
-  display: none;
-}
-
-.file-preview table {
-  width: 100%;
-  font-size: 0.8rem;
-  border-collapse: collapse;
-}
-
-.file-preview th {
-  background-color: #f4f5f7;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.file-preview td, .file-preview th {
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border: 1px solid var(--border-color);
-  white-space: nowrap;
-}
-
-/* Help tooltip */
-.help-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background-color: var(--secondary-color);
-  color: white;
-  font-size: 10px;
-  margin-left: var(--spacing-xs);
-  cursor: help;
-}
-
-.tooltip {
-  position: relative;
-  display: inline-block;
-}
-
-.tooltip .tooltip-text {
-  visibility: hidden;
-  width: 200px;
-  background-color: #172b4d;
-  color: #fff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 5px;
-  position: absolute;
-  z-index: 1;
-  bottom: 125%;
-  left: 50%;
-  margin-left: -100px;
-  opacity: 0;
-  transition: opacity 0.3s;
-  font-size: 0.8rem;
-  pointer-events: none;
-}
-
-.tooltip:hover .tooltip-text {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* Add these CSS rules to the end of your main.css file */
-
-/* Email button styles */
-.epic-actions {
-  text-align: center;
-}
-
-.email-btn {
-  background-color: var(--info-color);
-  color: white;
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  margin: 0 auto;
-}
-
-.email-btn:hover {
-  background-color: #0052cc;
-}
-
-.email-btn i {
-  font-size: 14px;
-}
-
-/* Email modal styles */
-.email-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.email-modal-content {
-  background-color: var(--panel-bg);
-  border-radius: var(--border-radius);
-  width: 90%;
-  max-width: 700px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: var(--spacing-lg);
-  position: relative;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-}
-
-.email-modal-close {
-  position: absolute;
-  top: var(--spacing-md);
-  right: var(--spacing-md);
-  font-size: 24px;
-  cursor: pointer;
-  color: var(--secondary-color);
-}
-
-.email-modal-close:hover {
-  color: var(--secondary-hover);
-}
-
-.email-form {
-  margin-top: var(--spacing-lg);
-}
-
-.email-form-group {
-  margin-bottom: var(--spacing-md);
-}
-
-.email-form-group label {
-  display: block;
-  margin-bottom: var(--spacing-xs);
-  font-weight: 500;
-}
-
-.email-form-group input,
-.email-form-group textarea {
-  width: 100%;
-  padding: var(--spacing-sm);
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-  font-family: inherit;
-  font-size: 0.95rem;
-}
-
-.email-form-group textarea {
-  resize: vertical;
-  min-height: 150px;
-  font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
-  line-height: 1.5;
-}
-
-.email-actions {
-  display: flex;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .email-modal-content {
-    width: 95%;
-    padding: var(--spacing-md);
+   */
+  
+  /**
+   * Creates demo data for main Jira export directly as an object
+   * @returns {Object} - Object with headers and records
+   */
+  createDemoMainData() {
+    // Define the headers
+    const headers = [
+      'Key', 'Summary', 'Issue Type', 'Status', 'Epic Link', 'Parent', 
+      'Story Points', 'Sprint', 'Components', 'Time in Status (days)'
+    ];
+    
+    // Define the records
+    const records = [
+      {
+        'Key': 'EPIC-100',
+        'Summary': 'Customer Dashboard Redesign',
+        'Issue Type': 'Epic',
+        'Status': 'In Progress',
+        'Epic Link': '',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 5',
+        'Components': 'Frontend',
+        'Time in Status (days)': '15'
+      },
+      {
+        'Key': 'EPIC-101',
+        'Summary': 'API Gateway Implementation',
+        'Issue Type': 'Epic',
+        'Status': 'Ready to Develop',
+        'Epic Link': '',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 6',
+        'Components': 'Backend',
+        'Time in Status (days)': '5'
+      },
+      {
+        'Key': 'EPIC-102',
+        'Summary': 'Mobile App Authentication',
+        'Issue Type': 'Epic',
+        'Status': 'Researching',
+        'Epic Link': '',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 5',
+        'Components': 'Security',
+        'Time in Status (days)': '8'
+      },
+      {
+        'Key': 'EPIC-103',
+        'Summary': 'Analytics Dashboard',
+        'Issue Type': 'Epic',
+        'Status': 'To Do',
+        'Epic Link': '',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 7',
+        'Components': 'Analytics',
+        'Time in Status (days)': '2'
+      },
+      {
+        'Key': 'EPIC-104',
+        'Summary': 'Payment Processing Integration',
+        'Issue Type': 'Epic',
+        'Status': 'Released',
+        'Epic Link': '',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 4',
+        'Components': 'Payments',
+        'Time in Status (days)': '45'
+      },
+      {
+        'Key': 'EPIC-105',
+        'Summary': 'User Profile Management',
+        'Issue Type': 'Epic',
+        'Status': 'Ready for Story Refinement',
+        'Epic Link': '',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 6',
+        'Components': 'User Management',
+        'Time in Status (days)': '12'
+      },
+      {
+        'Key': 'EPIC-106',
+        'Summary': 'Search Functionality Improvement',
+        'Issue Type': 'Epic',
+        'Status': 'Paused',
+        'Epic Link': '',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 7',
+        'Components': 'Search',
+        'Time in Status (days)': '20'
+      },
+      {
+        'Key': 'EPIC-107',
+        'Summary': 'Notification System',
+        'Issue Type': 'Epic',
+        'Status': 'Enabled',
+        'Epic Link': '',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 5',
+        'Components': 'Communications',
+        'Time in Status (days)': '7'
+      },
+      {
+        'Key': 'EPIC-108',
+        'Summary': 'Performance Optimization',
+        'Issue Type': 'Epic',
+        'Status': 'Will not implement',
+        'Epic Link': '',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 6',
+        'Components': 'Infrastructure',
+        'Time in Status (days)': '0'
+      },
+      {
+        'Key': 'EPIC-109',
+        'Summary': 'Data Migration Tools',
+        'Issue Type': 'Epic',
+        'Status': 'In Progress',
+        'Epic Link': '',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 7',
+        'Components': 'Data',
+        'Time in Status (days)': '10'
+      },
+      {
+        'Key': 'TASK-201',
+        'Summary': 'Create UI wireframes',
+        'Issue Type': 'Task',
+        'Status': 'Done',
+        'Epic Link': 'EPIC-100',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 5',
+        'Components': 'Frontend',
+        'Time in Status (days)': '5'
+      },
+      {
+        'Key': 'TASK-202',
+        'Summary': 'Implement dashboard widgets',
+        'Issue Type': 'Task',
+        'Status': 'In Progress',
+        'Epic Link': 'EPIC-100',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 5',
+        'Components': 'Frontend',
+        'Time in Status (days)': '3'
+      },
+      {
+        'Key': 'TASK-203',
+        'Summary': 'Design RESTful API endpoints',
+        'Issue Type': 'Task',
+        'Status': 'Done',
+        'Epic Link': 'EPIC-101',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 6',
+        'Components': 'Backend',
+        'Time in Status (days)': '4'
+      },
+      {
+        'Key': 'TASK-204',
+        'Summary': 'Implement rate limiting',
+        'Issue Type': 'Task',
+        'Status': 'To Do',
+        'Epic Link': 'EPIC-101',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 6',
+        'Components': 'Backend',
+        'Time in Status (days)': '0'
+      },
+      {
+        'Key': 'TASK-205',
+        'Summary': 'Implement OAuth flow',
+        'Issue Type': 'Task',
+        'Status': 'In Progress',
+        'Epic Link': 'EPIC-102',
+        'Parent': '',
+        'Story Points': '',
+        'Sprint': 'Sprint 5',
+        'Components': 'Security',
+        'Time in Status (days)': '6'
+      }
+    ];
+    
+    return { headers, records };
   }
   
-  .email-actions {
-    flex-direction: column;
-  }
-}
-
-/* Email suggestions styles - updated for row display */
-.email-suggestions {
-  background-color: #f4f5f7;
-  border-radius: var(--border-radius);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-}
-
-.suggestion-item {
-  display: flex;
-  align-items: center;
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.suggestion-item:last-child {
-  border-bottom: none;
-}
-
-.suggestion-role {
-  font-weight: 600;
-  width: 100px;
-  flex-shrink: 0;
-}
-
-.suggestion-name {
-  flex: 1;
-  padding-left: var(--spacing-sm);
-  color: var(--text-color);
-}
-
-.add-recipient-btn {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-left: var(--spacing-sm);
-}
-
-.add-recipient-btn:hover {
-  background-color: var(--primary-hover);
-  transform: scale(1.1);
-}
-
-.add-recipient-btn.added {
-  background-color: var(--success-color);
-  animation: pulse 0.5s ease-in-out;
-}
-
-@keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.3); }
-  100% { transform: scale(1); }
-}
-
-/* Email modal close button styling */
-.email-modal-close {
-  position: absolute;
-  top: var(--spacing-md);
-  right: var(--spacing-md);
-  font-size: 24px;
-  cursor: pointer;
-  color: var(--secondary-color);
-}
-
-.email-modal-close:hover {
-  color: var(--secondary-hover);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .email-suggestions {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* CSS updates for child issues display in the Jira Epic Analyzer */
-
-/* Child issue count badge */
-.child-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--info-color);
-  color: white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 0.8rem;
-  margin-left: 8px;
-  font-weight: bold;
-}
-
-/* Completion indicator for child issues */
-.completion-indicator {
-  width: 100%;
-  height: 8px;
-  background-color: var(--border-color);
-  border-radius: 4px;
-  overflow: hidden;
-  margin-top: 4px;
-  position: relative;
-}
-
-.completion-bar {
-  height: 100%;
-  background-color: var(--primary-color);
-  border-radius: 4px;
-  transition: width 0.3s ease;
-}
-
-.completion-indicator span {
-  position: absolute;
-  right: 0;
-  top: -18px;
-  font-size: 0.8rem;
-  color: var(--light-text);
-}
-
-/* Child issues summary in email modal */
-.child-issues-summary {
-  background-color: #f4f5f7;
-  border-radius: var(--border-radius);
-  padding: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
-}
-
-.child-issues-summary h4 {
-  font-size: 1rem;
-  margin-bottom: var(--spacing-xs);
-}
-
-.child-issues-summary p {
-  font-size: 0.9rem;
-  margin-bottom: var(--spacing-xs);
-}
-
-/* Update to sprint metrics table with improved styling */
-.sprint-metrics-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: var(--spacing-md);
-  border: 1px solid var(--border-color);
-}
-
-.sprint-metrics-table th {
-  background-color: #f4f5f7;
-  padding: var(--spacing-sm);
-  font-weight: 600;
-  text-align: left;
-  border-bottom: 2px solid var(--border-color);
-}
-
-.sprint-metrics-table td {
-  padding: var(--spacing-sm);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.sprint-metrics-table tr:last-child td {
-  border-bottom: none;
-}
-
-.sprint-metrics-table tr:hover {
-  background-color: rgba(0, 82, 204, 0.05);
-}
-
-/* Add hover effect to email buttons */
-.email-btn:hover {
-  background-color: #0052cc;
-  transform: scale(1.1);
-  transition: all 0.2s ease;
-}
-
-/* Improve metrics card styling */
-.metrics-card {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
-}
-
-.metric-item {
-  background-color: white;
-  border-radius: var(--border-radius);
-  padding: var(--spacing-md);
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.metric-item:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.metric-value {
-  font-size: 1.8rem;
-  font-weight: 600;
-  color: var(--primary-color);
-  display: block;
-}
-
-.metric-label {
-  color: var(--light-text);
-  font-size: 0.9rem;
-  margin-top: var(--spacing-xs);
-}
-
-/* CSS for Epic Detail Popup */
-
-/* Clickable row styles */
-.clickable-row {
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.clickable-row:hover {
-  background-color: rgba(0, 82, 204, 0.05) !important;
-}
-
-/* Epic detail modal */
-.epic-detail-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  overflow-y: auto;
-}
-
-.epic-detail-content {
-  background-color: var(--panel-bg);
-  border-radius: var(--border-radius);
-  width: 90%;
-  max-width: 900px;
-  max-height: 90vh;
-  overflow-y: auto;
-  padding: var(--spacing-lg);
-  position: relative;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
-}
-
-.epic-detail-close {
-  position: absolute;
-  top: var(--spacing-md);
-  right: var(--spacing-md);
-  font-size: 24px;
-  cursor: pointer;
-  color: var(--secondary-color);
-  z-index: 5;
-}
-
-.epic-detail-close:hover {
-  color: var(--secondary-hover);
-}
-
-/* Epic header */
-.epic-detail-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--spacing-md);
-  border-bottom: 1px solid var(--border-color);
-  padding-bottom: var(--spacing-md);
-}
-
-.epic-detail-header h3 {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-color);
-}
-
-.epic-id {
-  color: var(--light-text);
-  font-size: 1rem;
-  margin-left: var(--spacing-sm);
-}
-
-.status-badge {
-  display: inline-block;
-  padding: 3px 8px;
-  border-radius: 3px;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.status-badge.on-track {
-  background-color: var(--success-bg);
-  color: var(--success-color);
-}
-
-.status-badge.at-risk {
-  background-color: var(--warning-bg);
-  color: var(--warning-color);
-}
-
-.status-badge.closed {
-  background-color: var(--info-bg);
-  color: var(--info-color);
-}
-
-/* Epic summary */
-.epic-summary {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
-  background-color: #f9fafb;
-  border-radius: var(--border-radius);
-  padding: var(--spacing-md);
-}
-
-.summary-item {
-  display: flex;
-  flex-direction: column;
-}
-
-.summary-label {
-  font-size: 0.8rem;
-  color: var(--light-text);
-  margin-bottom: 2px;
-}
-
-.summary-value {
-  font-weight: 500;
-  color: var(--text-color);
-}
-
-.summary-value.on-track {
-  color: var(--success-color);
-}
-
-.summary-value.at-risk {
-  color: var(--warning-color);
-}
-
-.summary-value.closed {
-  color: var(--info-color);
-}
-
-/* Child issues summary */
-.child-issues-summary {
-  margin-bottom: var(--spacing-md);
-}
-
-.child-issues-summary h4 {
-  display: flex;
-  align-items: center;
-  margin-bottom: var(--spacing-xs);
-}
-
-.child-issues-summary .child-count {
-  margin-left: auto;
-  font-size: 0.9rem;
-  color: var(--light-text);
-  font-weight: normal;
-}
-
-/* Status tabs */
-.status-tabs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-md);
-}
-
-.status-tab {
-  background: none;
-  border: 1px solid var(--border-color);
-  padding: 5px 10px;
-  border-radius: var(--border-radius);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 0.9rem;
-}
-
-.status-tab:hover {
-  background-color: #f4f5f7;
-}
-
-.status-tab.active {
-  background-color: var(--primary-color);
-  color: white;
-  border-color: var(--primary-color);
-}
-
-/* Child issues table */
-.child-issues-container {
-  max-height: 400px;
-  overflow-y: auto;
-  border: 1px solid var(--border-color);
-  border-radius: var(--border-radius);
-}
-
-.child-issues-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.child-issues-table th {
-  position: sticky;
-  top: 0;
-  background-color: #f4f5f7;
-  padding: 8px 12px;
-  text-align: left;
-  font-weight: 600;
-  border-bottom: 2px solid var(--border-color);
-}
-
-.child-issues-table td {
-  padding: 8px 12px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.child-issues-table tr:last-child td {
-  border-bottom: none;
-}
-
-.child-issues-table tr:nth-child(even) {
-  background-color: #fafbfc;
-}
-
-.child-issues-table tr:hover {
-  background-color: rgba(0, 82, 204, 0.05);
-}
-
-/* Responsive adjustments */
-@media (max-width: 768px) {
-  .epic-detail-content {
-    width: 95%;
-    padding: var(--spacing-md);
+  /**
+   * Creates demo time data directly as an object
+   * @returns {Object} - Object with headers and records
+   */
+  createDemoTimeData() {
+    // Define the headers
+    const headers = [
+      'Key', 'Status', 'Started', 'Ended', 'Duration (days)'
+    ];
+    
+    // Define the records
+    const records = [
+      {
+        'Key': 'EPIC-100',
+        'Status': 'To Do',
+        'Started': '2025-01-01',
+        'Ended': '2025-01-10',
+        'Duration (days)': '10'
+      },
+      {
+        'Key': 'EPIC-100',
+        'Status': 'Researching',
+        'Started': '2025-01-11',
+        'Ended': '2025-01-20',
+        'Duration (days)': '10'
+      },
+      {
+        'Key': 'EPIC-100',
+        'Status': 'In Progress',
+        'Started': '2025-01-21',
+        'Ended': '',
+        'Duration (days)': '15'
+      },
+      {
+        'Key': 'EPIC-101',
+        'Status': 'To Do',
+        'Started': '2025-01-05',
+        'Ended': '2025-01-10',
+        'Duration (days)': '5'
+      },
+      {
+        'Key': 'EPIC-101',
+        'Status': 'Ready to Develop',
+        'Started': '2025-01-11',
+        'Ended': '',
+        'Duration (days)': '5'
+      },
+      {
+        'Key': 'EPIC-102',
+        'Status': 'To Do',
+        'Started': '2025-01-03',
+        'Ended': '2025-01-08',
+        'Duration (days)': '5'
+      },
+      {
+        'Key': 'EPIC-102',
+        'Status': 'Researching',
+        'Started': '2025-01-09',
+        'Ended': '',
+        'Duration (days)': '8'
+      },
+      {
+        'Key': 'EPIC-103',
+        'Status': 'To Do',
+        'Started': '2025-01-15',
+        'Ended': '',
+        'Duration (days)': '2'
+      },
+      {
+        'Key': 'EPIC-104',
+        'Status': 'To Do',
+        'Started': '2025-01-01',
+        'Ended': '2025-01-05',
+        'Duration (days)': '5'
+      },
+      {
+        'Key': 'EPIC-104',
+        'Status': 'Researching',
+        'Started': '2025-01-06',
+        'Ended': '2025-01-10',
+        'Duration (days)': '5'
+      },
+      {
+        'Key': 'EPIC-104',
+        'Status': 'Ready for Story Refinement',
+        'Started': '2025-01-11',
+        'Ended': '2025-01-15',
+        'Duration (days)': '5'
+      },
+      {
+        'Key': 'EPIC-104',
+        'Status': 'Ready to Develop',
+        'Started': '2025-01-16',
+        'Ended': '2025-01-25',
+        'Duration (days)': '10'
+      },
+      {
+        'Key': 'EPIC-104',
+        'Status': 'In Progress',
+        'Started': '2025-01-26',
+        'Ended': '2025-02-10',
+        'Duration (days)': '15'
+      },
+      {
+        'Key': 'EPIC-104',
+        'Status': 'Released',
+        'Started': '2025-02-11',
+        'Ended': '',
+        'Duration (days)': '45'
+      },
+      {
+        'Key': 'EPIC-105',
+        'Status': 'To Do',
+        'Started': '2025-01-08',
+        'Ended': '2025-01-15',
+        'Duration (days)': '8'
+      },
+      {
+        'Key': 'EPIC-105',
+        'Status': 'Researching',
+        'Started': '2025-01-16',
+        'Ended': '2025-01-25',
+        'Duration (days)': '10'
+      },
+      {
+        'Key': 'EPIC-105',
+        'Status': 'Ready for Story Refinement',
+        'Started': '2025-01-26',
+        'Ended': '',
+        'Duration (days)': '12'
+      }
+    ];
+    
+    return { headers, records };
   }
   
-  .epic-detail-header {
-    flex-direction: column;
-    align-items: flex-start;
+  /**
+   * Validate parsed CSV data
+   * @param {Object} data - Parsed CSV data
+   * @throws {Error} - If data is invalid
+   */
+  validateData(data) {
+    // Check if data exists and has expected structure
+    if (!data || !data.headers || !data.records) {
+      throw new Error('Invalid CSV data structure.');
+    }
+    
+    // Check if we have headers
+    if (data.headers.length === 0) {
+      throw new Error('CSV file has no headers.');
+    }
+    
+    // Check for minimum required columns
+    const requiredColumns = ['Key', 'Issue Type', 'Status', 'Summary'];
+    const missingColumns = [];
+    
+    requiredColumns.forEach(col => {
+      // Try to find column with similar name
+      const found = data.headers.some(header => 
+        header.toLowerCase().includes(col.toLowerCase())
+      );
+      
+      if (!found) {
+        missingColumns.push(col);
+      }
+    });
+    
+    if (missingColumns.length > 0) {
+      throw new Error(`CSV is missing required columns: ${missingColumns.join(', ')}`);
+    }
+    
+    // Check for parent-child relationship columns
+    const epicLinkCol = data.headers.some(header => 
+      header.toLowerCase().includes('epic link') || header.toLowerCase().includes('parent epic')
+    );
+    
+    const parentLinkCol = data.headers.some(header => 
+      header.toLowerCase().includes('parent') || header.toLowerCase().includes('parent link')
+    );
+    
+    if (!epicLinkCol && !parentLinkCol) {
+      ErrorHandler.handle(
+        'No Epic Link or Parent Link column found. Child issues will not be linked to epics.',
+        'Field Warning', true, 'warning'
+      );
+    }
   }
   
-  .epic-status {
-    margin-top: var(--spacing-sm);
+  /**
+   * Reanalyze data with new SLA settings
+   */
+  reanalyzeWithNewSLA() {
+    if (!this.mainData) {
+      return; // No data to reanalyze
+    }
+    
+    try {
+      // Process CSV data with hierarchical support
+      const processedData = DataProcessor.processMainCSV(this.mainData);
+      // Check if the returned data has the expected format
+      if (!processedData || !processedData.epics) {
+        throw new Error('Failed to process epic data. Invalid data structure returned.');
+      }
+      
+      const { epics } = processedData;
+      
+      // Process time data if available
+      let timeMap = new Map();
+      if (this.timeData) {
+        timeMap = DataProcessor.processTimeCSV(this.timeData);
+      }
+      
+      // Merge and analyze data with new SLA settings
+      const mergedEpics = DataProcessor.mergeEpicData(epics, timeMap);
+      const metrics = DataProcessor.calculateMetrics(mergedEpics);
+      
+      // Store epics data for reanalysis
+      this.epicsData = mergedEpics;
+      
+      // Display results
+      this.uiController.displayResults(mergedEpics, metrics);
+      
+      // Show success message
+      ErrorHandler.handle(
+        'Data reanalyzed with updated SLA settings.',
+        '', true, 'info'
+      );
+      
+    } catch (error) {
+      ErrorHandler.handle(error, 'Reanalysis Error');
+      console.error('Reanalysis error:', error);
+    }
+  }
+  /**
+ * Load and process demo data from the repository
+ */
+async loadDemoData() {
+  // Clear previous errors and show loading
+  ErrorHandler.clear();
+  Utils.showLoading();
+  
+  try {
+    // Show info message about processing
+    ErrorHandler.handle(
+      "Loading demo data from sample files...", 
+      '', true, 'info'
+    );
+    
+    // Instead of fetching from absolute paths, use relative paths
+    const mainFileUrl = './sampledata/Epicanalyzer_Export_AllFields_Obfuscated.csv';
+    const timeFileUrl = './sampledata/Epicanalyzer_TimeInStatus_Obfuscated.csv';
+    
+    let mainResponse, timeResponse;
+    
+    try {
+      // Use XMLHttpRequest instead of fetch for better compatibility
+      mainResponse = await this.loadFileWithXHR(mainFileUrl);
+      if (!mainResponse) {
+        throw new Error('Failed to load main demo file');
+      }
+    } catch (error) {
+      throw new Error(`Error fetching main demo file: ${error.message}`);
+    }
+    
+    try {
+      timeResponse = await this.loadFileWithXHR(timeFileUrl);
+      if (!timeResponse) {
+        throw new Error('Failed to load time demo file');
+      }
+    } catch (error) {
+      ErrorHandler.handle(
+        `Error fetching time demo file: ${error.message}. Continuing without time information.`,
+        'Demo Data Warning', true, 'warning'
+      );
+      timeResponse = null;
+    }
+    
+    // Create File objects from the loaded content
+    const mainFileBlob = new Blob([mainResponse], { type: 'text/csv' });
+    const mainFile = new File([mainFileBlob], "Epicanalyzer_Export_AllFields_Obfuscated.csv", { type: 'text/csv' });
+    
+    let timeFile = null;
+    if (timeResponse) {
+      const timeFileBlob = new Blob([timeResponse], { type: 'text/csv' });
+      timeFile = new File([timeFileBlob], "Epicanalyzer_TimeInStatus_Obfuscated.csv", { type: 'text/csv' });
+    }
+    
+    // Update UI to show the file names
+    document.getElementById('mainFileName').textContent = mainFile.name;
+    document.getElementById('timeFileName').textContent = timeFile ? timeFile.name : 'No file selected';
+    
+    // Now we use the same analysis path as for uploaded files
+    
+    // Parse the files using the same CSVParser
+    let mainData, timeData;
+    
+    try {
+      mainData = await CSVParser.parseFile(mainFile);
+      ErrorHandler.clear();
+      console.log(`Parsed main CSV: ${mainData.headers.length} columns, ${mainData.records.length} rows`);
+    } catch (error) {
+      throw new Error(ErrorHandler.formatCSVError(error, mainFile.name));
+    }
+    
+    if (timeFile) {
+      try {
+        timeData = await CSVParser.parseFile(timeFile);
+      } catch (error) {
+        ErrorHandler.handle(
+          ErrorHandler.formatCSVError(error, timeFile.name),
+          'Time CSV Parse Error', true, 'warning'
+        );
+        timeData = null;
+      }
+    } else {
+      timeData = null;
+    }
+    
+    // Validate parsed data
+    this.validateData(mainData);
+    
+    // Store data for potential reanalysis
+    this.mainData = mainData;
+    this.timeData = timeData;
+    
+    // Process CSV data with hierarchical support
+    const processedData = DataProcessor.processMainCSV(mainData);
+    
+    // Check if the returned data has the expected format
+    if (!processedData || !processedData.epics) {
+      throw new Error('Failed to process epic data. Invalid data structure returned.');
+    }
+    
+    const { epics, childIssues } = processedData;
+    
+    // Store child issues data
+    this.childIssuesData = childIssues;
+    
+    // Display warning if no epics found
+    if (!epics || epics.length === 0) {
+      ErrorHandler.handle(
+        'No epics found in the demo file.',
+        '', true, 'warning'
+      );
+      Utils.hideLoading();
+      return;
+    }
+    
+    // Process time data if available
+    let timeMap = new Map();
+    try {
+      if (timeData) {
+        timeMap = DataProcessor.processTimeCSV(timeData);
+      }
+    } catch (error) {
+      ErrorHandler.handle(
+        `Error processing time data: ${error.message}. Continuing without time information.`,
+        'Time Data Warning', true, 'warning'
+      );
+    }
+    
+    // Merge and analyze data
+    let mergedEpics, metrics;
+    try {
+      mergedEpics = DataProcessor.mergeEpicData(epics, timeMap);
+      
+      if (!mergedEpics || mergedEpics.length === 0) {
+        throw new Error('Failed to merge epic data. No epics were returned.');
+      }
+      
+      metrics = DataProcessor.calculateMetrics(mergedEpics);
+      
+      if (!metrics || !metrics.overall) {
+        throw new Error('Failed to calculate metrics. Invalid metrics structure returned.');
+      }
+    } catch (error) {
+      throw new Error(`Error analyzing data: ${error.message}`);
+    }
+    
+    // Store epics data for reanalysis
+    this.epicsData = mergedEpics;
+    
+    // Display results
+    this.uiController.displayResults(mergedEpics, metrics);
+    
+    // Show success message with counts
+    const childIssuesCount = childIssues ? childIssues.length : 0;
+    ErrorHandler.handle(
+      `Successfully loaded demo data with ${epics.length} epics and ${childIssuesCount} child issues.`,
+      '', true, 'info'
+    );
+    
+  } catch (error) {
+    ErrorHandler.handle(error, 'Demo Data Error');
+    console.error('Demo data error:', error);
+  } finally {
+    Utils.hideLoading();
+  }
+}
+
+/**
+ * Helper method to load file using XMLHttpRequest
+ * This avoids issues with fetch in some environments
+ * @param {string} url - URL of the file to load
+ * @returns {Promise<string>} - Promise resolving to file contents
+ */
+loadFileWithXHR(url) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'text';
+    
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        resolve(xhr.responseText);
+      } else {
+        reject(new Error(`Status ${xhr.status}: ${xhr.statusText}`));
+      }
+    };
+    
+    xhr.onerror = function() {
+      reject(new Error('Network error occurred'));
+    };
+    
+    xhr.send();
+  });
+}
+}
+
+// Initialize the application when DOM is ready
+document.addEventListener('DOMContentLoaded', () => {
+  // Make sure ErrorHandler is defined before initializing the app
+  if (typeof ErrorHandler === 'undefined') {
+    console.error('ErrorHandler module is not loaded. Please include error-handler.js before app.js');
+    
+    // Display error to user
+    const errorElement = document.getElementById('errorMessage');
+    if (errorElement) {
+      errorElement.innerHTML = '<i class="fas fa-times-circle"></i> Application initialization error: Missing ErrorHandler module';
+      errorElement.style.display = 'block';
+      errorElement.className = 'error-message error-message';
+    }
+    return;
   }
   
-  .status-tabs {
-    overflow-x: auto;
-    padding-bottom: var(--spacing-xs);
-    margin-bottom: var(--spacing-md);
+  // Also check for other required modules
+  const requiredModules = ['UIController', 'CSVParser', 'DataProcessor', 'Utils', 'SLAConfig'];
+  const missingModules = requiredModules.filter(module => typeof window[module] === 'undefined');
+  
+  if (missingModules.length > 0) {
+    console.error(`Missing required modules: ${missingModules.join(', ')}`);
+    
+    // Display error to user
+    const errorElement = document.getElementById('errorMessage');
+    if (errorElement) {
+      errorElement.innerHTML = `<i class="fas fa-times-circle"></i> Application initialization error: Missing modules (${missingModules.join(', ')})`;
+      errorElement.style.display = 'block';
+      errorElement.className = 'error-message error-message';
+    }
+    return;
   }
   
-  .child-issues-container {
-    max-height: 300px;
-  }
-}
-
-/* Children badge styles */
-.children-badge {
-  display: inline-block;
-  background-color: var(--primary-color);
-  color: white;
-  border-radius: 50%;
-  width: 20px;
-  height: 20px;
-  font-size: 0.8rem;
-  line-height: 20px;
-  text-align: center;
-  margin-left: var(--spacing-xs);
-  cursor: help;
-}
-
-/* Total points display */
-.total-points {
-  color: var(--secondary-color);
-  font-size: 0.9rem;
-}
-
-/* Hover effect for child badge */
-.children-badge:hover {
-  background-color: var(--primary-hover);
-  transform: scale(1.1);
-}
-
-css.clickable-row {
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.clickable-row:hover {
-  background-color: rgba(0, 82, 204, 0.05) !important;
-}
-
-.pagination-btn.disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-/* Add these styles to the end of main.css */
-
-/* Table sorting styles */
-th.sortable {
-  cursor: pointer;
-  user-select: none;
-  position: relative;
-  padding-right: 25px; /* Make space for the sort icon */
-}
-
-.sort-indicator {
-  position: absolute;
-  right: 5px;
-  top: 50%;
-  transform: translateY(-50%);
-  transition: color 0.2s ease;
-}
-
-th.sortable:hover .sort-indicator {
-  color: var(--primary-color);
-}
-
-th.sortable:hover {
-  background-color: #e8f0fa;
-}
-
-/* Sprint badges for better visibility */
-.sprint-badge {
-  display: inline-block;
-  background-color: var(--info-bg);
-  color: var(--info-color);
-  border-radius: 12px;
-  padding: 2px 8px;
-  font-size: 0.85rem;
-  font-weight: 500;
-}
-
-/* Story points formatting */
-.total-points {
-  color: var(--secondary-color);
-  font-size: 0.9rem;
-  margin-left: 4px;
-}
-
-/* Add hover effect to table rows */
-tr.clickable-row:hover {
-  background-color: rgba(0, 82, 204, 0.05);
-  cursor: pointer;
-}
-
-/* Make sort indicators more visible */
-.fa-sort-up, .fa-sort-down {
-  color: var(--primary-color);
-}
-
-.fa-sort {
-  color: var(--light-text);
-  opacity: 0.5;
-}
-
-
-/* Updated button styling for the demo data button */
-
-.action-buttons {
-  display: flex;
-  gap: var(--spacing-md);
-  margin-top: var(--spacing-lg);
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
-}
-
-/* Primary analyze button */
-.primary-btn {
-  background-color: var(--primary-color);
-  color: white;
-  border: none;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-radius: var(--border-radius);
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  transition: all 0.2s ease;
-  min-width: 150px;
-  justify-content: center;
-}
-
-.primary-btn:hover {
-  background-color: var(--primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-}
-
-.primary-btn:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
-/* Demo data button - distinct look */
-#demoDataBtn {
-  background-color: #6554c0; /* Purple color */
-  color: white;
-  border: none;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-radius: var(--border-radius);
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  transition: all 0.2s ease;
-  min-width: 150px;
-  justify-content: center;
-}
-
-#demoDataBtn:hover {
-  background-color: #5344aa;
-  transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-}
-
-#demoDataBtn:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
-/* Reset button */
-.secondary-btn {
-  background-color: var(--secondary-color);
-  color: white;
-  border: none;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-radius: var(--border-radius);
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-  transition: all 0.2s ease;
-  min-width: 150px;
-  justify-content: center;
-}
-
-.secondary-btn:hover {
-  background-color: var(--secondary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-}
-
-.secondary-btn:active {
-  transform: translateY(0);
-  box-shadow: none;
-}
-
-/* Make buttons more responsive */
-@media (max-width: 768px) {
-  .action-buttons {
-    flex-direction: column;
-    width: 100%;
-  }
+  // Initialize SLA configuration
+  window.slaConfig = new SLAConfig();
   
-  .primary-btn, #demoDataBtn, .secondary-btn {
-    width: 100%;
-    min-width: unset;
-  }
-}
+  // Initialize main application
+  window.app = new JiraEpicAnalyzer();
+});
