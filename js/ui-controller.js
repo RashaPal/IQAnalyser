@@ -14,7 +14,7 @@ constructor() {
   
   // Pagination state
   this.currentPage = 1;
-  this.rowsPerPage = 20; // Default
+  this.rowsPerPage = 10; // Default
   
   // Sorting state - add these new properties
   this.sortDirection = 'desc'; // Start with descending order
