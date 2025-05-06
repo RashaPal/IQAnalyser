@@ -4,26 +4,32 @@
  * Fixed version that properly handles clickable rows and epic detail popups
  */
 class UIController {
-  constructor() {
-    this.epicsData = [];
-    this.metricsData = null;
-    this.filteredEpics = [];
-    
-    // Pagination state
-    this.currentPage = 1;
-    this.rowsPerPage = 20; // Default
-    
-// Add to the UIController class constructor
-//this.sortDirection = 'asc';
-//this.sortColumn = 'id'; // default sort column
 
-    // Debug mode
-    this.debugMode = true;
-    
+
+// Add to the UIController class constructor
+constructor() {
+  this.epicsData = [];
+  this.metricsData = null;
+  this.filteredEpics = [];
+  
+  // Pagination state
+  this.currentPage = 1;
+  this.rowsPerPage = 20; // Default
+  
+  // Sorting state - add these new properties
+  this.sortDirection = 'desc'; // Start with descending order
+  this.sortColumn = 'id'; // Default sort by ID
+  
+  // Debug mode
+  this.debugMode = true;
+
     // Initialize UI components
     this.initializeEventListeners();
-  }
+    // Add dark mode toggle
+    this.addDarkModeToggle();
+}
   
+
   /**
    * Set up event listeners for interactive elements
    */
@@ -176,59 +182,58 @@ class UIController {
     this.metricsData = null;
   }
   
-  /**
-   * Display the results in the UI
-   * @param {Array} epics - Processed epic data
-   * @param {Object} metrics - Calculated metrics
-   */
-  displayResults(epics, metrics) {
-    console.log("Displaying results with epics:", epics);
-    
-    // Store data for filtering
-    this.epicsData = epics;
-    this.filteredEpics = epics; // Initially, filtered is same as all
-    this.metricsData = metrics;
-    
-    // Reset pagination to first page
-    this.currentPage = 1;
-    
-    // Show results section
-    const resultsSection = document.getElementById('resultsSection');
-    if (resultsSection) resultsSection.style.display = 'block';
-    
-    // Reset filters to 'all'
-    const filters = {
-      statusFilter: document.getElementById('statusFilter'),
-      sprintFilter: document.getElementById('sprintFilter'),
-      slaStatusFilter: document.getElementById('slaStatusFilter')
-    };
-    
-    Object.values(filters).forEach(filter => {
-      if (filter) filter.value = 'all';
-    });
-    
-    // Reset rows per page to default
-    const rowsPerPage = document.getElementById('rowsPerPage');
-    if (rowsPerPage) {
-      rowsPerPage.value = this.rowsPerPage === 'all' ? 'all' : this.rowsPerPage.toString();
-    }
-    
-    // Update available filter options
-    this.updateFilters(epics);
-    
-    // Update metrics summary
-    this.updateMetricsSummary(metrics);
-    
-    // Update table with pagination
-    this.updatePaginatedTable();
-
-    // In the displayResults method, add after updating filters
-this.updateTableHeaders();
-
-// Make sure to sort epics when displaying initially
-this.sortEpics();
-
+/**
+ * Display the results in the UI
+ * @param {Array} epics - Processed epic data
+ * @param {Object} metrics - Calculated metrics
+ */
+displayResults(epics, metrics) {
+  console.log("Displaying results with epics:", epics);
+  
+  // Store data for filtering
+  this.epicsData = epics;
+  this.filteredEpics = epics; // Initially, filtered is same as all
+  this.metricsData = metrics;
+  
+  // Reset pagination to first page
+  this.currentPage = 1;
+  
+  // Show results section
+  const resultsSection = document.getElementById('resultsSection');
+  if (resultsSection) resultsSection.style.display = 'block';
+  
+  // Reset filters to 'all'
+  const filters = {
+    statusFilter: document.getElementById('statusFilter'),
+    sprintFilter: document.getElementById('sprintFilter'),
+    slaStatusFilter: document.getElementById('slaStatusFilter')
+  };
+  
+  Object.values(filters).forEach(filter => {
+    if (filter) filter.value = 'all';
+  });
+  
+  // Reset rows per page to default
+  const rowsPerPage = document.getElementById('rowsPerPage');
+  if (rowsPerPage) {
+    rowsPerPage.value = this.rowsPerPage === 'all' ? 'all' : this.rowsPerPage.toString();
   }
+  
+  // Update available filter options
+  this.updateFilters(epics);
+  
+  // Update table headers to be sortable
+  this.updateTableHeaders();
+  
+  // Sort epics based on current sort settings
+  this.sortEpics();
+  
+  // Update metrics summary
+  this.updateMetricsSummary(metrics);
+  
+  // Update table with pagination
+  this.updatePaginatedTable();
+}
   
   /**
    * Update the filter dropdowns with available options
@@ -321,6 +326,10 @@ this.sortEpics();
  * FIXED: now properly marks rows as clickable and includes clearer child counts
  * @param {Array} epics - Epic data to display
  */
+/**
+ * Update the results table with epic data
+ * @param {Array} epics - Epic data to display
+ */
 updateResultsTable(epics) {
   const tableBody = document.getElementById('resultsBody');
   if (!tableBody) {
@@ -344,29 +353,11 @@ updateResultsTable(epics) {
     row.title = 'Click to view epic details';
     
     // Add child issue count badge if there are children
-    // IMPROVED: Make badge more prominent with custom styling
     const childrenCount = epic.children ? epic.children.length : 0;
     let childBadge = '';
     
     if (childrenCount > 0) {
-      // Use inline styles to ensure badge is visible without CSS changes
-      childBadge = `
-        <span class="children-badge" 
-              title="${childrenCount} child issues"
-              style="display: inline-block; 
-                     background-color: #0052cc; 
-                     color: white; 
-                     border-radius: 12px; 
-                     min-width: 20px; 
-                     height: 20px; 
-                     text-align: center; 
-                     font-size: 0.8rem; 
-                     font-weight: bold;
-                     line-height: 20px;
-                     padding: 0 4px;
-                     margin-left: 5px;">
-          ${childrenCount}
-        </span>`;
+      childBadge = `<span class="children-badge" title="${childrenCount} child issues">${childrenCount}</span>`;
     }
     
     // Create email button for at-risk epics
@@ -386,7 +377,7 @@ updateResultsTable(epics) {
     }
     
     // Calculate completion percentage
-    let completionPercentage = '0.0%';
+    let completionPercentage = '0%';
     let completionBar = '';
     if (epic.totalStoryPoints > 0) {
       const percentage = (epic.completedStoryPoints / epic.totalStoryPoints) * 100;
@@ -400,14 +391,18 @@ updateResultsTable(epics) {
       `;
     }
     
+    // Format sprint as badge
+    const sprintDisplay = epic.sprint ? 
+      `<span class="sprint-badge">${epic.sprint}</span>` : 
+      '-';
+    
     // Populate the row with epic data
-    // UPDATED: Display child badge more prominently
     row.innerHTML = `
       <td>${epic.id} ${childBadge}</td>
       <td>${epic.name}</td>
       <td>${epic.status}</td>
       <td>${epic.timeInStatus || '-'}</td>
-      <td>${epic.sprint || '-'}</td>
+      <td>${sprintDisplay}</td>
       <td>${pointsDisplay}</td>
       <td>${epic.cycleTime || '-'}</td>
       <td class="${epic.slaStatus.class}">${epic.slaStatus.text}</td>
@@ -878,35 +873,38 @@ updateResultsTable(epics) {
     }, 100);
   }
   
-  /**
-   * Apply filters to the data and update the display
-   */
-  applyFilters() {
-    const statusFilter = document.getElementById('statusFilter')?.value || 'all';
-    const sprintFilter = document.getElementById('sprintFilter')?.value || 'all';
-    const slaStatusFilter = document.getElementById('slaStatusFilter')?.value || 'all';
-    
-    // Filter epics based on selected filters
-    this.filteredEpics = [...this.epicsData];
-    
-    if (statusFilter !== 'all') {
-      this.filteredEpics = this.filteredEpics.filter(epic => epic.status === statusFilter);
-    }
-    
-    if (sprintFilter !== 'all') {
-      this.filteredEpics = this.filteredEpics.filter(epic => epic.sprint === sprintFilter);
-    }
-    
-    if (slaStatusFilter !== 'all') {
-      this.filteredEpics = this.filteredEpics.filter(epic => epic.slaStatus.class === slaStatusFilter);
-    }
-    
-    // Reset to first page when filters change
-    this.currentPage = 1;
-    
-    // Update table with filtered and paginated data
-    this.updatePaginatedTable();
+/**
+ * Apply filters to the data and update the display
+ */
+applyFilters() {
+  const statusFilter = document.getElementById('statusFilter')?.value || 'all';
+  const sprintFilter = document.getElementById('sprintFilter')?.value || 'all';
+  const slaStatusFilter = document.getElementById('slaStatusFilter')?.value || 'all';
+  
+  // Filter epics based on selected filters
+  this.filteredEpics = [...this.epicsData];
+  
+  if (statusFilter !== 'all') {
+    this.filteredEpics = this.filteredEpics.filter(epic => epic.status === statusFilter);
   }
+  
+  if (sprintFilter !== 'all') {
+    this.filteredEpics = this.filteredEpics.filter(epic => epic.sprint === sprintFilter);
+  }
+  
+  if (slaStatusFilter !== 'all') {
+    this.filteredEpics = this.filteredEpics.filter(epic => epic.slaStatus.class === slaStatusFilter);
+  }
+  
+  // Reset to first page when filters change
+  this.currentPage = 1;
+  
+  // Re-sort the filtered epics to maintain sort order
+  this.sortEpics();
+  
+  // Update table with filtered and paginated data
+  this.updatePaginatedTable();
+}
   
   /**
    * Calculate the total number of pages
@@ -985,9 +983,8 @@ updateResultsTable(epics) {
     }
   }
 
-  /**
- * Update the results table header to support sorting
- * Add this method to UIController class
+/**
+ * Update the table headers to make them sortable
  */
 updateTableHeaders() {
   const headers = document.querySelectorAll('#resultsTable th');
@@ -1006,10 +1003,10 @@ updateTableHeaders() {
   };
   
   headers.forEach(header => {
-    const columnName = header.textContent;
+    const columnName = header.textContent.trim();
     const dataAttribute = sortableColumns[columnName];
     
-    // Skip non-sortable columns
+    // Skip non-sortable columns like Actions
     if (!dataAttribute) return;
     
     // Add sortable class and data attribute
@@ -1026,6 +1023,279 @@ updateTableHeaders() {
     header.addEventListener('click', () => this.handleSort(dataAttribute));
   });
 }
+
+/**
+ * Handle sorting when a header is clicked
+ * @param {string} column - Column to sort by
+ */
+handleSort(column) {
+  // Toggle sort direction if same column clicked again
+  if (this.sortColumn === column) {
+    this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    this.sortColumn = column;
+    this.sortDirection = 'asc';
+  }
+  
+  // Update sort indicators in the UI
+  this.updateSortIndicators();
+  
+  // Sort the filtered epics
+  this.sortEpics();
+  
+  // Update the table
+  this.updatePaginatedTable();
+}
+
+/**
+ * Update sort indicators in table headers
+ */
+updateSortIndicators() {
+  const headers = document.querySelectorAll('#resultsTable th.sortable');
+  
+  headers.forEach(header => {
+    const column = header.getAttribute('data-sort');
+    const indicator = header.querySelector('.sort-indicator');
+    
+    if (column === this.sortColumn) {
+      indicator.innerHTML = this.sortDirection === 'asc' 
+        ? '<i class="fas fa-sort-up"></i>' 
+        : '<i class="fas fa-sort-down"></i>';
+    } else {
+      indicator.innerHTML = '<i class="fas fa-sort"></i>';
+    }
+  });
+}
+
+/**
+ * Sort epics based on current sort column and direction
+ */
+sortEpics() {
+  const column = this.sortColumn;
+  const direction = this.sortDirection;
+  
+  this.filteredEpics.sort((a, b) => {
+    let valueA, valueB;
+    
+    // Extract the appropriate values for comparison
+    switch (column) {
+      case 'id':
+        // Extract numeric parts from IDs for numeric sorting
+        const numA = parseInt(a.id.replace(/[^\d]/g, '')) || 0;
+        const numB = parseInt(b.id.replace(/[^\d]/g, '')) || 0;
+        valueA = numA;
+        valueB = numB;
+        break;
+      case 'name':
+        valueA = a.name || '';
+        valueB = b.name || '';
+        break;
+      case 'status':
+        valueA = a.status || '';
+        valueB = b.status || '';
+        break;
+      case 'timeInStatus':
+        // Convert time to numeric value for sorting
+        valueA = this.parseTimeValue(a.timeInStatus);
+        valueB = this.parseTimeValue(b.timeInStatus);
+        break;
+      case 'sprint':
+        valueA = a.sprint || '';
+        valueB = b.sprint || '';
+        break;
+      case 'totalStoryPoints':
+        valueA = a.totalStoryPoints || 0;
+        valueB = b.totalStoryPoints || 0;
+        break;
+      case 'cycleTime':
+        valueA = parseFloat(a.cycleTime) || 0;
+        valueB = parseFloat(b.cycleTime) || 0;
+        break;
+      case 'slaStatus':
+        valueA = a.slaStatus ? a.slaStatus.text : '';
+        valueB = b.slaStatus ? b.slaStatus.text : '';
+        break;
+      case 'completion':
+        valueA = a.totalStoryPoints > 0 ? a.completedStoryPoints / a.totalStoryPoints : 0;
+        valueB = b.totalStoryPoints > 0 ? b.completedStoryPoints / b.totalStoryPoints : 0;
+        break;
+      default:
+        valueA = a.id;
+        valueB = b.id;
+    }
+    
+    // Compare the values
+    let result;
+    if (typeof valueA === 'number' && typeof valueB === 'number') {
+      result = valueA - valueB;
+    } else {
+      result = String(valueA).localeCompare(String(valueB));
+    }
+    
+    // Apply sort direction
+    return direction === 'asc' ? result : -result;
+  });
+
+  // After sorting, add animation classes to rows
+setTimeout(() => {
+  const rows = document.querySelectorAll('#resultsBody tr');
+  rows.forEach((row, index) => {
+    row.style.transition = 'none';
+    row.style.opacity = '0.7';
+    row.style.transform = 'translateY(0)';
+    
+    setTimeout(() => {
+      row.style.transition = 'all 0.3s ease';
+      row.style.opacity = '1';
+      row.style.transform = 'translateY(0)';
+    }, 50 * (index % 10)); // Stagger animation
+  });
+}, 0);
+
+}
+
+/**
+ * Parse time value for sorting (e.g., "2w 3d" -> days)
+ * @param {string} timeString - Time string to parse
+ * @returns {number} - Time value in days
+ */
+parseTimeValue(timeString) {
+  if (!timeString || timeString === '-') return 0;
+  
+  try {
+    return DataProcessor.parseTimeInStatus(timeString);
+  } catch (e) {
+    return 0;
+  }
+}
+    
+    /**
+     * Handle sorting when a header is clicked
+     * @param {string} column - Column to sort by
+     */
+    handleSort(column) {
+      // Toggle sort direction if same column clicked again
+      if (this.sortColumn === column) {
+        this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
+      } else {
+        this.sortColumn = column;
+        this.sortDirection = 'asc';
+      }
+      
+      // Update sort indicators in the UI
+      this.updateSortIndicators();
+      
+      // Sort the filtered epics
+      this.sortEpics();
+      
+      // Update the table
+      this.updatePaginatedTable();
+    }
+    
+    /**
+     * Update sort indicators in table headers
+     */
+    updateSortIndicators() {
+      const headers = document.querySelectorAll('#resultsTable th.sortable');
+      
+      headers.forEach(header => {
+        const column = header.getAttribute('data-sort');
+        const indicator = header.querySelector('.sort-indicator');
+        
+        if (column === this.sortColumn) {
+          indicator.innerHTML = this.sortDirection === 'asc' 
+            ? '<i class="fas fa-sort-up"></i>' 
+            : '<i class="fas fa-sort-down"></i>';
+        } else {
+          indicator.innerHTML = '<i class="fas fa-sort"></i>';
+        }
+      });
+    }
+    
+    /**
+     * Sort epics based on current sort column and direction
+     */
+    sortEpics() {
+      const column = this.sortColumn;
+      const direction = this.sortDirection;
+      
+      this.filteredEpics.sort((a, b) => {
+        let valueA, valueB;
+        
+        // Extract the appropriate values for comparison
+        switch (column) {
+          case 'id':
+            // Extract numeric parts from IDs for numeric sorting
+            const numA = parseInt(a.id.replace(/[^\d]/g, '')) || 0;
+            const numB = parseInt(b.id.replace(/[^\d]/g, '')) || 0;
+            valueA = numA;
+            valueB = numB;
+            break;
+          case 'name':
+            valueA = a.name || '';
+            valueB = b.name || '';
+            break;
+          case 'status':
+            valueA = a.status || '';
+            valueB = b.status || '';
+            break;
+          case 'timeInStatus':
+            // Convert time to numeric value for sorting
+            valueA = this.parseTimeValue(a.timeInStatus);
+            valueB = this.parseTimeValue(b.timeInStatus);
+            break;
+          case 'sprint':
+            valueA = a.sprint || '';
+            valueB = b.sprint || '';
+            break;
+          case 'totalStoryPoints':
+            valueA = a.totalStoryPoints || 0;
+            valueB = b.totalStoryPoints || 0;
+            break;
+          case 'cycleTime':
+            valueA = parseFloat(a.cycleTime) || 0;
+            valueB = parseFloat(b.cycleTime) || 0;
+            break;
+          case 'slaStatus':
+            valueA = a.slaStatus ? a.slaStatus.text : '';
+            valueB = b.slaStatus ? b.slaStatus.text : '';
+            break;
+          case 'completion':
+            valueA = a.totalStoryPoints > 0 ? a.completedStoryPoints / a.totalStoryPoints : 0;
+            valueB = b.totalStoryPoints > 0 ? b.completedStoryPoints / b.totalStoryPoints : 0;
+            break;
+          default:
+            valueA = a.id;
+            valueB = b.id;
+        }
+        
+        // Compare the values
+        let result;
+        if (typeof valueA === 'number' && typeof valueB === 'number') {
+          result = valueA - valueB;
+        } else {
+          result = String(valueA).localeCompare(String(valueB));
+        }
+        
+        // Apply sort direction
+        return direction === 'asc' ? result : -result;
+      });
+    }
+    
+    /**
+     * Parse time value for sorting (e.g., "2w 3d" -> days)
+     * @param {string} timeString - Time string to parse
+     * @returns {number} - Time value in days
+     */
+    parseTimeValue(timeString) {
+      if (!timeString || timeString === '-') return 0;
+      
+      try {
+        return DataProcessor.parseTimeInStatus(timeString);
+      } catch (e) {
+        return 0;
+      }
+    }
 
 /**
  * Handle sorting when a header is clicked
@@ -1150,6 +1420,68 @@ parseTimeValue(timeString) {
   } catch (e) {
     return 0;
   }
+}
+
+// Add to UIController class
+saveUserPreferences() {
+  const preferences = {
+    sortColumn: this.sortColumn,
+    sortDirection: this.sortDirection,
+    rowsPerPage: this.rowsPerPage,
+    statusFilter: document.getElementById('statusFilter')?.value || 'all',
+    sprintFilter: document.getElementById('sprintFilter')?.value || 'all',
+    slaStatusFilter: document.getElementById('slaStatusFilter')?.value || 'all'
+  };
+  
+  localStorage.setItem('jiraEpicAnalyzerPrefs', JSON.stringify(preferences));
+}
+
+loadUserPreferences() {
+  try {
+    const savedPrefs = localStorage.getItem('jiraEpicAnalyzerPrefs');
+    if (savedPrefs) {
+      const prefs = JSON.parse(savedPrefs);
+      
+      // Restore sort settings
+      this.sortColumn = prefs.sortColumn || 'id';
+      this.sortDirection = prefs.sortDirection || 'desc';
+      
+      // Restore rows per page
+      this.rowsPerPage = prefs.rowsPerPage || 20;
+      
+      // Will restore filters when data is loaded
+      this.savedFilters = {
+        statusFilter: prefs.statusFilter || 'all',
+        sprintFilter: prefs.sprintFilter || 'all',
+        slaStatusFilter: prefs.slaStatusFilter || 'all'
+      };
+    }
+  } catch (e) {
+    console.error('Error loading user preferences:', e);
+  }
+}
+
+// Add dark mode toggle
+addDarkModeToggle() {
+  const toggle = document.createElement('div');
+  toggle.className = 'mode-toggle';
+  toggle.innerHTML = '<i class="fas fa-moon"></i>';
+  toggle.title = 'Toggle dark mode';
+  
+  toggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark-mode');
+    const isDark = document.body.classList.contains('dark-mode');
+    toggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+  });
+  
+  // Check saved preference
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+    toggle.innerHTML = '<i class="fas fa-sun"></i>';
+  }
+  
+  document.body.appendChild(toggle);
 }
 
 }
