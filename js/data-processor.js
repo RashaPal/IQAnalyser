@@ -347,7 +347,16 @@ class DataProcessor {
       console.log(`Total child issues assigned to epics: ${totalChildren}`);
       
       // Sort back to original order before returning
-      epics.sort((a, b) => a.id.localeCompare(b.id));
+      //epics.sort((a, b) => a.id.localeCompare(b.id));
+
+      // In DataProcessor.processMainCSV, before returning the result
+// Sort epics by ID in descending order
+epics.sort((a, b) => {
+  // Extract numeric parts from IDs for better sorting
+  const numA = parseInt(a.id.replace(/[^\d]/g, '')) || 0;
+  const numB = parseInt(b.id.replace(/[^\d]/g, '')) || 0;
+  return numB - numA; // Descending order
+});
       
       return { 
         epics, 
